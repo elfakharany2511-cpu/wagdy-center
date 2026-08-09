@@ -4,9 +4,10 @@ import { useState } from 'react';
 export default function AttendancePage() {
   const [center, setCenter] = useState('');
   const [grade, setGrade] = useState('');
+  const [studentName, setStudentName] = useState('');
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">سجل حضور ومتابعة الطلاب</h1>
       
       {/* اختيارات السنتر والمرحلة */}
@@ -22,6 +23,7 @@ export default function AttendancePage() {
             <option value="center1">سنتر جوجل 1</option>
             <option value="center2">سنتر جوجل 2</option>
             <option value="center3">سنتر جوجل 3</option>
+            <option value="sunrise">سنتر صن رايز</option>
           </select>
         </div>
 
@@ -44,48 +46,51 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      {/* جدول تسجيل الطلاب */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-md">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-blue-600 text-white">
-              <th className="p-3 text-right">اسم الطالب</th>
-              <th className="p-3 text-center">حالة الحضور</th>
-              <th className="p-3 text-center">حالة الامتحان</th>
-              <th className="p-3 text-center">تقييم المستوى</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b hover:bg-gray-50">
-              <td className="p-3 font-semibold text-gray-800">محمد أحمد (مثال)</td>
-              <td className="p-3 text-center">
-                <select className="p-2 border rounded bg-white">
-                  <option value="present">حاضر</option>
-                  <option value="absent">غائب</option>
-                  <option value="late">متأخر</option>
-                </select>
-              </td>
-              <td className="p-3 text-center">
-                <select className="p-2 border rounded bg-white">
-                  <option value="tested">امتحن</option>
-                  <option value="not_tested">لم يمتحن</option>
-                </select>
-              </td>
-              <td className="p-3 text-center">
-                <select className="p-2 border rounded bg-white">
-                  <option value="excellent">ممتاز</option>
-                  <option value="good">جيد</option>
-                  <option value="average">متوسط</option>
-                  <option value="poor">ضعيف</option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      {/* نموذج تسجيل طالب فردي بخانة كتابة واضحة */}
+      <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+        <div className="mb-4">
+          <label className="block mb-2 font-bold text-gray-700">اسم الطالب:</label>
+          <input 
+            type="text" 
+            placeholder="اكتب اسم الطالب هنا..."
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
+            className="w-full p-3 border rounded-lg"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block mb-2 font-bold text-gray-700">حالة الحضور:</label>
+            <select className="w-full p-3 border rounded-lg bg-white">
+              <option value="present">حاضر</option>
+              <option value="absent">غائب</option>
+              <option value="late">متأخر</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-2 font-bold text-gray-700">حالة الامتحان:</label>
+            <select className="w-full p-3 border rounded-lg bg-white">
+              <option value="tested">امتحن</option>
+              <option value="not_tested">لم يمتحن</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-2 font-bold text-gray-700">تقييم المستوى:</label>
+            <select className="w-full p-3 border rounded-lg bg-white">
+              <option value="excellent">ممتاز</option>
+              <option value="good">جيد</option>
+              <option value="average">متوسط</option>
+              <option value="poor">ضعيف</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <button className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl text-lg font-bold shadow-md transition-all">
-        حفظ بيانات الحضور والمتابعة في قاعدة البيانات
+      <button className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl text-lg font-bold shadow-md transition-all">
+        حفظ بيانات الطالب في قاعدة البيانات
       </button>
     </div>
   );
