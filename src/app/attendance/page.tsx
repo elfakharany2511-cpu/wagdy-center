@@ -11,11 +11,10 @@ export default function AttendancePage() {
   const [examStatus, setExamStatus] = useState('امتحن');
   const [levelEvaluation, setLevelEvaluation] = useState('ممتاز');
 
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // دالة لجلب الطلاب المسجلين لنفس السنتر والمرحلة
   const fetchStudents = async () => {
     const { data, error } = await supabase
       .from('attendance')
@@ -23,9 +22,7 @@ export default function AttendancePage() {
       .eq('center', center)
       .eq('grade', grade);
 
-    if (error) {
-      console.error(error);
-    } else {
+    if (!error) {
       setStudents(data || []);
     }
   };
@@ -34,7 +31,6 @@ export default function AttendancePage() {
     fetchStudents();
   }, [center, grade]);
 
-  // دالة الحفظ في قاعدة البيانات
   const handleSave = async () => {
     if (!studentName.trim()) {
       setMessage('⚠️ من فضلك اكتب اسم الطالب أولاً.');
@@ -58,35 +54,30 @@ export default function AttendancePage() {
       ]);
 
     if (error) {
-      console.error(error);
-      setMessage('❌ حصل خطأ أثناء الحفظ. تأكد من إعدادات الجدول.');
+      setMessage('❌ حصل خطأ أثناء الحفظ.');
     } else {
       setMessage('✅ تم حفظ بيانات الطالب بنجاح!');
-      setStudentName(''); // تفريغ خانة الاسم لإدخال طالب جديد
-      fetchStudents(); // تحديث الجدول تلقائياً
+      setStudentName('');
+      fetchStudents();
     }
     setLoading(false);
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto" style={{ fontFamily: 'Cairo, sans-serif' }}>
-      <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">سجل حضور ومتابعة الطلاب</h1>
+    <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Cairo, sans-serif' }}>
+      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px', textAlign: 'center' }}>سجل حضور ومتابعة الطلاب</h1>
       
       {message && (
-        <div className={`p-4 mb-6 rounded-lg text-center font-bold ${message.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <div style={{ padding: '12px', marginBottom: '20px', borderRadius: '8px', textAlign: 'center', fontWeight: 'bold', background: message.includes('✅') ? '#dcfce7' : '#fee2e2', color: message.includes('✅') ? '#166534' : '#991b1b' }}>
           {message}
         </div>
       )}
 
       {/* اختيارات السنتر والمرحلة */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-gray-50 p-4 rounded-xl shadow-sm">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px', background: '#f9fafb', padding: '16px', borderRadius: '12px' }}>
         <div>
-          <label className="block mb-2 font-bold text-gray-700">اختر السنتر:</label>
-          <select 
-            value={center} 
-            onChange={(e) => setCenter(e.target.value)}
-            className="w-full p-3 border rounded-lg bg-white"
-          >
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>اختر السنتر:</label>
+          <select value={center} onChange={(e) => setCenter(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', background: 'white' }}>
             <option value="سنتر جوجل 1">سنتر جوجل 1</option>
             <option value="سنتر جوجل 2">سنتر جوجل 2</option>
             <option value="سنتر جوجل 3">سنتر جوجل 3</option>
@@ -94,12 +85,8 @@ export default function AttendancePage() {
         </div>
 
         <div>
-          <label className="block mb-2 font-bold text-gray-700">اختر المرحلة:</label>
-          <select 
-            value={grade} 
-            onChange={(e) => setGrade(e.target.value)}
-            className="w-full p-3 border rounded-lg bg-white"
-          >
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>اختر المرحلة:</label>
+          <select value={grade} onChange={(e) => setGrade(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', background: 'white' }}>
             <option value="تالتة إعدادي">تالتة إعدادي</option>
             <option value="تانية إعدادي">تانية إعدادي</option>
             <option value="أولي إعدادي">أولي إعدادي</option>
@@ -107,23 +94,23 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      {/* نموذج تسجيل طالب فردي */}
-      <div className="bg-white p-6 rounded-xl shadow-md mb-8 border">
-        <div className="mb-4">
-          <label className="block mb-2 font-bold text-gray-700">اسم الطالب:</label>
+      {/* نموذج تسجيل طالب */}
+      <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', marginBottom: '24px', border: '1px solid #e5e7eb' }}>
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>اسم الطالب:</label>
           <input 
             type="text" 
             placeholder="اكتب اسم الطالب هنا..."
             value={studentName}
             onChange={(e) => setStudentName(e.target.value)}
-            className="w-full p-3 border rounded-lg"
+            style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }}>
           <div>
-            <label className="block mb-2 font-bold text-gray-700">حالة الحضور:</label>
-            <select value={attendanceStatus} onChange={(e) => setAttendanceStatus(e.target.value)} className="w-full p-3 border rounded-lg bg-white">
+            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px' }}>الحضور:</label>
+            <select value={attendanceStatus} onChange={(e) => setAttendanceStatus(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}>
               <option value="حاضر">حاضر</option>
               <option value="غائب">غائب</option>
               <option value="متأخر">متأخر</option>
@@ -131,16 +118,16 @@ export default function AttendancePage() {
           </div>
 
           <div>
-            <label className="block mb-2 font-bold text-gray-700">حالة الامتحان:</label>
-            <select value={examStatus} onChange={(e) => setExamStatus(e.target.value)} className="w-full p-3 border rounded-lg bg-white">
+            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px' }}>الامتحان:</label>
+            <select value={examStatus} onChange={(e) => setExamStatus(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}>
               <option value="امتحن">امتحن</option>
               <option value="لم يمتحن">لم يمتحن</option>
             </select>
           </div>
 
           <div>
-            <label className="block mb-2 font-bold text-gray-700">تقييم المستوى:</label>
-            <select value={levelEvaluation} onChange={(e) => setLevelEvaluation(e.target.value)} className="w-full p-3 border rounded-lg bg-white">
+            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px' }}>المستوى:</label>
+            <select value={levelEvaluation} onChange={(e) => setLevelEvaluation(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}>
               <option value="ممتاز">ممتاز</option>
               <option value="جيد">جيد</option>
               <option value="متوسط">متوسط</option>
@@ -152,40 +139,38 @@ export default function AttendancePage() {
         <button 
           onClick={handleSave}
           disabled={loading}
-          className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl text-lg font-bold shadow-md transition-all disabled:opacity-50"
+          style={{ width: '100%', background: '#16a34a', color: 'white', padding: '14px', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
         >
-          {loading ? 'جاري الحفظ...' : 'حفظ بيانات الطالب في قاعدة البيانات'}
+          {loading ? 'جاري الحفظ...' : 'حفظ بيانات الطالب'}
         </button>
       </div>
 
-      {/* جدول عرض الطلاب المسجلين لنفس السنتر والمرحلة */}
-      <div className="bg-white p-6 rounded-xl shadow-md border">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">قائمة طلاب: {center} ({grade})</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-right border-collapse">
-            <thead>
-              <tr className="bg-gray-100 border-b">
-                <th className="p-3">اسم الطالب</th>
-                <th className="p-3">الحضور</th>
-                <th className="p-3">الامتحان</th>
-                <th className="p-3">المستوى</th>
+      {/* جدول العرض */}
+      <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>قائمة طلاب: {center} ({grade})</h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
+          <thead>
+            <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
+              <th style={{ padding: '12px' }}>اسم الطالب</th>
+              <th style={{ padding: '12px' }}>الحضور</th>
+              <th style={{ padding: '12px' }}>الامتحان</th>
+              <th style={{ padding: '12px' }}>المستوى</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((s, index) => (
+              <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <td style={{ padding: '12px', fontWeight: 'bold' }}>{s.student_name}</td>
+                <td style={{ padding: '12px' }}>{s.attendance_status}</td>
+                <td style={{ padding: '12px' }}>{s.exam_status}</td>
+                <td style={{ padding: '12px' }}>{s.level_evaluation}</td>
               </tr>
-            </thead>
-            <tbody>
-              {students.map((s, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="p-3 font-semibold">{s.student_name}</td>
-                  <td className="p-3">{s.attendance_status}</td>
-                  <td className="p-3">{s.exam_status}</td>
-                  <td className="p-3">{s.level_evaluation}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {students.length === 0 && (
-            <p className="text-center text-gray-500 py-6">لا يوجد طلاب مسجلين حتى الآن لهذه المرحلة والسنتر.</p>
-          )}
-        </div>
+            ))}
+          </tbody>
+        </table>
+        {students.length === 0 && (
+          <p style={{ textAlign: 'center', color: '#6b7280', padding: '24px' }}>لا يوجد طلاب مسجلين حتى الآن.</p>
+        )}
       </div>
     </div>
   );
