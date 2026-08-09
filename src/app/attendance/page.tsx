@@ -4,67 +4,70 @@ import { supabase } from '../../lib/supabase';
 
 export default function AttendancePage() {
   const [studentName, setStudentName] = useState('');
-  const [center, setCenter] = useState('سنتر جوجل 1');
-  const [grade, setGrade] = useState('تالتة إعدادي');
-  const [attendance, setAttendance] = useState('حاضر');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // دي الدالة اللي بتشتغل لما تدوس على زرار الحفظ
   const handleSave = async () => {
-    if (!studentName) {
-      setMessage('⚠️ من فضلك اكتب اسم الطالب أولاً');
+    if (!studentName.trim()) {
+      setMessage('من فضلك اكتب اسم الطالب');
       return;
     }
 
-    // أمر الإرسال لقاعدة البيانات
-    const { error } = await supabase.from('attendance').insert([
-      { 
-        student_name: studentName, 
-        center: center, 
-        grade: grade, 
-        attendance_status: attendance, 
-        exam_status: 'امتحن', 
-        level_evaluation: 'جيد' 
-      }
-    ]);
+    setLoading(true);
+    setMessage('');
 
-    if (error) {
-      setMessage('❌ حصل خطأ أثناء الحفظ');
-      console.error(error);
-    } else {
-      setMessage('✅ تم حفظ الطالب بنجاح!');
-      setStudentName(''); // مسح خانة الاسم استعداداً للطالب اللي بعده
+    try {
+      const { error } = await supabase.from('attendance').insert([
+        { 
+          student_name: studentName, 
+          center: 'سنتر جوجل 1', 
+          grade: 'تالتة إعدادي', 
+          attendance_status: 'حاضر', 
+          exam_status: 'امتحن', 
+          level_evaluation: 'جيد' 
+        }
+      ]);
+
+      if (error) {
+        setMessage('حدث خطأ أثناء الحفظ');
+      } else {
+        setMessage('تم حفظ الطالب بنجاح');
+        setStudentName('');
+      }
+    } catch (err) {
+      setMessage('حدث خطأ غير متوقع');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-xl shadow-md mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">سجل الحضور</h1>
+    <div style={{ padding: '24px', maxWidth: '500px', margin: '40px auto', fontFamily: 'Cairo, sans-serif' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', textAlign: 'center' }}>سجل الحضور</h1>
       
       {message && (
-        <div className="p-3 mb-4 text-center font-bold rounded bg-gray-100">
+        <div style={{ padding: '12px', marginBottom: '16px', textAlign: 'center', fontWeight: 'bold', background: '#f3f4f6', borderRadius: '8px' }}>
           {message}
         </div>
       )}
 
-      {/* خانة كتابة اسم الطالب */}
-      <div className="mb-4">
-        <label className="block mb-2 font-semibold">اسم الطالب:</label>
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>اسم الطالب:</label>
         <input 
           type="text" 
-          className="w-full p-3 border rounded-lg"
+          style={{ width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px', outline: 'none' }}
           placeholder="اكتب اسم الطالب هنا..."
           value={studentName}
           onChange={(e) => setStudentName(e.target.value)}
         />
       </div>
 
-      {/* زرار الحفظ */}
       <button 
         onClick={handleSave}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-bold transition-all"
+        disabled={loading}
+        style={{ width: '100%', background: '#2563eb', color: 'white', padding: '12px', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
       >
-        حفظ بيانات الطالب
+        {loading ? 'جاري الحفظ...' : 'حفظ بيانات الطالب'}
       </button>
     </div>
   );
