@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 export default function StudentsPage() {
   const [newName, setNewName] = useState('');
@@ -10,7 +10,7 @@ export default function StudentsPage() {
     e.preventDefault();
     if (!newName || !newPhone) return;
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('students')
       .insert([{ name: newName, phone: newPhone }]);
 
